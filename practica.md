@@ -23,8 +23,11 @@
   Son puros comandos de consola
   
   ``sudo sysctl -w net.ipv4.ip_forward=1 ``
+  
   ``sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE``
+  
   ``sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT``
+  
   ``sudo iptables -A FORWARD -I enp0s3 -O enp0s8 -M State -STATE RELATED,ESTABLISHED -j ACCEPT``
   
   Una vez puestos esos comandos vamos a explicarlos un poco:
