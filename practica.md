@@ -71,9 +71,13 @@ Si quisieramos reedirigir la informacion que nos llega desde un puerto a otro se
 ``sudo iptables -t nat -A OUTPUT -p tcp --dport 80 -j REDIRECT --to-port 8080``
 
 * Ahora pasemos a instalar LDAP:
+  
   ``sudo apt-get install slapd ldap-utils``
+  
   ``sudo dpkg-reconfigure slapd``
+  
   Tras estos dos comandos nos saltara un instalador para Ldap donde deberemos poner lo siguiente:
+  
   * Nombre del dominio.
   * El nombre de la organizacion.
   * Elegimos una contraseña de admin.
