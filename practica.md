@@ -85,9 +85,12 @@ Y con eso ya tendriamos ldap en nuestra maquina server.
 * Ahora pasemos a preparar el DNS:
 
 1. Instalamos bind9:
+   
    ``sudo apt-get install bind9``
 2. Vamos a configurar el siguiente fichero donde vamos a decir donde se encuentran los ficheros de zona y zona inversa:
+   
    ``sudo nano /etc/bind/named.conf.local``
+   
 
 
 
