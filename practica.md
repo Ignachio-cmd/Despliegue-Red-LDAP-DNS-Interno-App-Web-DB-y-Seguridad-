@@ -52,7 +52,7 @@
 * **-A FORWARD**: Es para indicar que esta regla se aplica al tráfico que está siendo reenviado.
 * **-j ACCEPT**: Indica que el tráfico que cumpla con estas condiciones debe ser permitido pasar.
   
-  ``sudo iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT``
+  ``sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT``
   
   ¿Que hace esta linea?: Es la que nos permite que las respuestas que nos da internet puedan volver a nuestra red interna.
 * **-m state**: Le dice a iptables que use el módulo de seguimiento de conexiones.
