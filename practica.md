@@ -13,6 +13,7 @@
 - Configuramos su netplan:
   
   ![netplan](imgs/pcrouter/netplanpcrouter.png)
+  
   Una vez terminado de preparar el fichero tendremos que usar el comando:
   
   ``sudo nano netplan apply``
