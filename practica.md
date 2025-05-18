@@ -70,23 +70,60 @@ Si quisieramos reedirigir la informacion que nos llega desde un puerto a otro se
 
 ``sudo iptables -t nat -A OUTPUT -p tcp --dport 80 -j REDIRECT --to-port 8080``
 
-* Ahora pasemos a instalar LDAP:
-  
-  ``sudo apt-get install slapd ldap-utils``
-  
-  ``sudo dpkg-reconfigure slapd``
-  
-  Tras estos dos comandos nos saltara un instalador para Ldap donde deberemos poner lo siguiente:
-  
-  * Nombre del dominio.
-  * El nombre de la organizacion.
-  * Elegimos una contraseña de admin.
-  * Cuando nos diga que si queremos quitar la DB le decimos que no.
-  * Y cuando nos diga de mover la antigua le diremos que si.
+---
+
+# Ahora pasemos a instalar LDAP:
+
+``sudo apt-get install slapd ldap-utils``
+
+``sudo dpkg-reconfigure slapd``
+
+Tras estos dos comandos nos saltara un instalador para Ldap donde deberemos poner lo siguiente:
+
+* Nombre del dominio.
+* El nombre de la organizacion.
+* Elegimos una contraseña de admin.
+* Cuando nos diga que si queremos quitar la DB le decimos que no.
+* Y cuando nos diga de mover la antigua le diremos que si.
 
 Y con eso ya tendriamos ldap en nuestra maquina server.
 
-* Ahora pasemos a preparar el DNS:
+### Vamos con el usuario:
+
+El paso 1 y 2 se pueden omitir si ya los tienes creados.
+
+1. Creamos una unidad organizativa:
+   
+   ``sudo nano ou_people.ldif``
+   
+   y lo añadimos:
+   
+   ``ldapadd -x -D cn=admin,dc=dominya,dc=com -W -f ou_people.ldif``
+   
+   ![oudeldap](imgs/pcrouter/ou.png)
+   
+   <p>
+2. Creamos un grupo:
+   
+   ``sudo nano buengrupo.ldif``
+   
+   ![grupodellap](imgs/pcrouter/grupo.png)
+   
+   y lo añadimos:
+   
+   ``ldapadd -x -D cn=admin,dc=dominya,dc=com -W -f buengrupo.ldif``
+   
+   <p>
+3. Creamos el usuario:
+   
+   ``miguelUser.ldif``
+   
+   ![usuarioldap](imgs/pcrouter/user.png)
+   
+   y lo añadimos:
+   
+
+# Ahora pasemos a preparar el DNS:
 
 1. Instalamos bind9:
    
@@ -95,12 +132,33 @@ Y con eso ya tendriamos ldap en nuestra maquina server.
    
    ``sudo nano /etc/bind/named.conf.local``
    
-
-
-
-
-
-
-
-
+   ![Rutas de los ficheros zonas](imgs/pcrouter/rutasFicherosZOna.png)
+   
+   <p>
+3. Pasemos a configurar el fichero zona y zona inversa:
+   
+   * Primero copiamos el fichero de zona y de zona inversa de ejemplo que tenemos para poder tener una buena estructura:
+     
+     ``sudo cp /etc/bind/db.local /etc/bind/db.dominya.com``
+     
+     ``sudo cp /etc/bind/db.127 /etc/bind/db.192.168.22 ``
+     
+     <p>
+   * Ahora editamos el fichero zona:
+     
+     ``sudo nano /etc/bind/db.dominya.com``
+     
+     ![ficheroZona](imgs/pcrouter/ficheroZona.png)
+   * Ahora editamos el fichero zona inversa:
+     
+     ``sudo nano /etc/bind/db.192.168.22``
+     
+     ![ficheroZona](imgs/pcrouter/ficheroZonaInversa.png)
+     Podemos comprobar si tenemos bien el fichero a traves de:
+     
+     ``sudo named-checkzone 22.168.192.in-addr.arpa /etc/bind/db.192.168.22``
+     
+     Una vez ya lo tengamos todo solo tendremos que reiniciar el servicio de bind9:
+     
+     ``sudo systemctl restart bind9``
 
