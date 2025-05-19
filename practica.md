@@ -1,10 +1,12 @@
 # Despliegue-Red-LDAP-DNS-Interno-App-Web-DB-y-Seguridad-
 
-1.-Topología de la red (IP y nombre de cada equipo):
+Topología de la red (IP y nombre de cada equipo):
 
 ![Topologia_de_la_red](imgs/pcrouter/TopologiaDeLaRed.png)
 
-2.-¿Que he hecho en el pcrouter?:
+# PCROUTER
+
+### ¿Que he hecho en el pcrouter?:
 
 - Configurar pcrouter:
   pcrouter va a tener dos redes, una interna y otra nat, esto nos va servir para que las demas maquinas tengas acceso a internet a traves de esta.
@@ -23,6 +25,13 @@
   Son puros comandos de consola
   
   ``sudo sysctl -w net.ipv4.ip_forward=1 ``
+  Pero este comando se borra al reiniciar la maquina, si quieres hacerlo permanente tendremos que ir a:
+  
+  ``sudo nano sysctl.conf``
+  
+  y descomentar la linea que es igual que el comando anteriormente dado.
+  
+  ![ipv4](imgs/pcrouter/ipv4.png)
   
   ``sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE``
   
@@ -122,6 +131,7 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
    
    y lo añadimos:
    
+   ``ldapadd -x -D "cn=admin,dc=dominya,dc=com" -W -f javiUser.ldif``
 
 # Ahora pasemos a preparar el DNS:
 
@@ -149,11 +159,13 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
      ``sudo nano /etc/bind/db.dominya.com``
      
      ![ficheroZona](imgs/pcrouter/ficheroZona.png)
+     
    * Ahora editamos el fichero zona inversa:
      
      ``sudo nano /etc/bind/db.192.168.22``
      
      ![ficheroZona](imgs/pcrouter/ficheroZonaInversa.png)
+     
      Podemos comprobar si tenemos bien el fichero a traves de:
      
      ``sudo named-checkzone 22.168.192.in-addr.arpa /etc/bind/db.192.168.22``
@@ -161,4 +173,46 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
      Una vez ya lo tengamos todo solo tendremos que reiniciar el servicio de bind9:
      
      ``sudo systemctl restart bind9``
+
+# PCCLIENT:
+
+### ¿Que he hecho en el pcclient?:
+
+1. Configurar el netplan para darle una ip y poder tener salida internet.
+   
+   ![netplan](imgs/pcclient/netplanC.png)
+   
+   <p>
+2. Instalamos ldap-client:
+   
+   ``sudo apt-get install libnss-ldap libpam-ldap ldap-utils nscd``
+   
+   Y durante la instalacion:
+   
+   * URI del servidor LDAP: ldap://192.168.22.1
+   * DN de búsqueda: dc=dominya,dc=com
+   * Versión LDAP: 3
+   * Hacer que la base de datos local sea escribible: No
+   * ¿Exigir inicio de sesión para realizar acciones administrativas?: No
+   * ¿Permitir que el administrador LDAP se comporte como administrador local?: Sí
+   * ¿Permitir acceso sin contraseña?: No
+     <p><p>
+3. Ahora tenemos que configurar el fichero ``/etc/nsswitch.conf``:
+   ¿Para que nos sirve este archivo? pues es fundamental para decirle al sistema Linux cómo debe buscar y resolver información sobre diferentes tipos de datos
+   
+   ![nssitch](imgs/pcclient/nss.png)
+   
+   <p>
+4. Ahora vamos a aplicar una pequeña opcion poniendo el siguiente comando:
+   
+   ``sudo pam-auth-update``
+   
+   Este comando nos dara distintas opciones pero a nosotros la que nos interesa es para que se cree automaticamnete el directorio del usuario ldap.
+   
+   ![auth](imgs/pcclient/auth.png)
+   
+   <p>
+5. Por ultimo inicamos sesion:
+   
+   ``su - usuario``
 
