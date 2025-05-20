@@ -238,11 +238,135 @@ Y durante la instalacion:
    El secure installation es para ejecutar un asistente interactivo para hacer que la instalación de MySQL sea más segura, configurando contraseñas, eliminando usuarios y bases de datos de prueba, y ajustando permisos por defecto.
    
    <p>
-3. Ahora es el turno de bloquear a pcclient para que no pueda acceder a la base de datos y que solo pcweb pueda acceder a ella. Para ello escribiremos los siguientes comandos:
+3. Ahora vamos a crear un usuario y una base de datos para dejarla lista para nuestro servicio web:
    
-   * ``sudo ufw allow from 192.168.22.3 to any port 3306``
-   * ``sudo ufw deny from 192.168.22.2 to any port 3306``
-   * ``sudo ufw enable``
+   * 1.- Vamos a acceder como root a mysql con el siguiente comando:
+     
+     ``sudo mysql -u root -p``
+     
+     <p>
+   * 2.- Una vez dentro crea una base de datos con el nombre que tu quieras(como mi sevicio es moodle yo ya lo voy a crear orientado a ello):
+     
+     ``CREATE DATABASE moodle_db;``
+     
+     <p>
+   * 3.- Creamos el usuario para esa base de datos y le damos privilegios:
+     
+     ``CREATE USER 'moodle_nacho'@'192.168.22.3' IDENTIFIED BY '123';``
+     
+     ``GRANT ALL PRIVILEGES ON moodle_db.* TO 'moodle_nacho'@'192.168.22.3';``
+     
+     ``FLUSH PRIVILEGES;``
+     
+     <p>
+   * 4.- Ya podemos salir de mysql:
+     
+     ``exit;``
+     
+     <p>
+
+4. Ahora es el turno de bloquear a pcclient para que no pueda acceder a la base de datos y que solo pcweb pueda acceder a ella. Para ello escribiremos los siguientes comandos:
+
+* ``sudo ufw allow from 192.168.22.3 to any port 3306``
+  <p><p>
+* ``sudo ufw deny from 192.168.22.2 to any port 3306``
+  <p><p>
+* ``sudo ufw enable``
+
+# PCWEB:
+
+### ¿Que he hecho en pcweb?:
+
+1. Configurar Netplan:
+   
+   ![NetplanWEB](imgs/pcweb/netplanWEB.png)
+   
+   👀️  ``sudo netplan apply`` no te olvides.
+   
+   <p>
+2. Vamos a instalar todas las dependecias para tener apache y php:
+   
+   ``sudo apt install apache2 php libapache2-mod-php php-mysql php-curl php-zip php-xml php-mbstring php-gd php-intl php-soap -y``
+   
+   Desglosemos esto un poco:
+   
+   * apache2: Aqui estamos instalando el servidor web Apache que es uno de los servidores web más populares y utilizados en el mundo.
+     <p><p>
+   * php: Aqui estamos instalando el intérprete de PHP. ¿Y que es php? pues se trata de un lenguaje de programación muy popular para el desarrollo web. Nos permite crear sitios web dinámicos.
+     <p><p>
+   * libapache2-mod-php: Se podria decir que es el "pegamento" que permite que el servidor web Apache pueda ejecutar código PHP. Nos integra PHP directamente en Apache, de modo que cuando Apache recibe una solicitud para un archivo .php, sabe cómo procesarlo con el intérprete de PHP y enviar el resultado al navegador.
+     <p><p>
+   * php-mysql: Nos proporciona la conectividad de PHP con bases de datos de MySQL. Es esencial ya que necesitamos que nuestro servicio web se mantenga a traves de un base de datos porque necesitamos almacenar y recuperar datos de una de estas.
+     <p><p>
+   * php-curl: Nos instala la extensión cURL para PHP. ¿Y que es cURL? pues cURL nos permite que PHP haga solicitudes HTTP/HTTPS a otros servidores web, lo cual es muy útil para consumir APIs externas, descargar archivos, etc.
+     <p><p>
+   * php-zip: Lo que nos permite que PHP cree y manipule archivos ZIP
+     <p><p>
+   * php-xml: Nos proporciona soporte para procesar XML en PHP, lo que nos es útil para intercambiar datos estructurados.
+     <p><p>
+   * php-mbstring: Nos ofrece funciones para trabajar con cadenas de caracteres multibyte. Osea se que con esto podemos usar nuestra querida ``ñ``.
+     <p><p>
+   * php-gd: Es para instalar la librería GD para PHP que nos permite que PHP manipule imágenes de forma dinámica, por si quieres subir alguna imagen a la pagina web, etc.
+     <p><p>
+   * php-intl: Nos proporciona funcionalidades para internacionalización osea se para poder usar distintos idiomas, fechas, formatos de hora, etc.
+     <p><p>
+   * php-soap: Habilita el soporte para el protocolo SOAP (Simple Object Access Protocol) en PHP que es basicamente para que podamos comunicarnos entre servicios web.
+     <p><p>
+3. Como ya dije el sevicio web que he elegido es moodle asique vamos a instalarlo:
+   
+   * 1.- Vamos a su pagina web: [Link de descarga Moodle](https://download.moodle.org/releases/latest/) y descargamos la version mas reciente.
+     
+     ![DescargaMoodle](imgs/pcweb/moodleWeb.png)
+     
+     <p><p>
+   * 2.- Una vez instalado vamos a moverlo a un directorio ya con un nombre a tu eleccion:
+     
+     ``sudo mv /var/www/html/moodle /var/www/html/estudyo``
+     
+     <p>
+   * 3.- Cambiamos los permisos de la carpeta al usuario de apache que es **Data**:
+     
+     ``sudo chown -R www-data:www-data /var/www/html/estudyo``
+     (El ``-R`` es para que haya recursividad y que todos estos permisos tambien se apliquen a todas las carpetas que hay dentro)
+     
+     Y le damos los permisos pertinentes para que Data pueda manipular a placer las carpetas:
+     
+     ``sudo chmod -R 755 /var/www/html/mi-aula-virtual``
+     
+     <p>
+   * 4.- Ahora vamos a crear una carpeta para guardar los datos de moodle y tenerlos localizados ya que luego en la instalacion nos pedira la ruta. En mi caso yo los coloque aqui:
+     
+     ``sudo mkdir /var/moodledata``
+     
+     <p>
+     👀️ No te olvides de volver a darle a Data los persmisos para esta carpeta.
+     <p>
+4. Ahora vamos a prepara en eltorno virtual de Apache:
+   
+   * 1.- Creamos el fichero de configuracion Apache para crear un virtual host:
+     
+     ``sudo nano /etc/apache2/sites-available/moodle.conf``
+     
+     ![VirtualHsot](imgs/pcweb/virtualHost.png)
+     
+     ¿Para que es esto? Sencillamente para poder acceder a nuestra pagina a traves del nombre del dominio en vez de solo por la ip del servidor.
+     
+     <p>
+   * 2.- Por ultimo aplicamos los siguientes tres comandos para activar nuestro sitio web:
+     
+     * ``sudo a2ensite moodle.conf``
+       <p><p>
+     * ``sudo a2enmod rewrite``
+       <p><p>
+     * ``sudo a2enmod rewrite``
+       <p><p>
+5. Y ya esta, por ultimo solo tendriamos que acceder a nuestra pagina web y ya tendriamos moodle listo para funcionar, tendremos una instalacion guiada muy sencilla de moodle.
+
+
+
+
+
+
 
 
 
