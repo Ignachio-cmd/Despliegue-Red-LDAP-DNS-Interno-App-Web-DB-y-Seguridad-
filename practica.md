@@ -159,7 +159,6 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
      ``sudo nano /etc/bind/db.dominya.com``
      
      ![ficheroZona](imgs/pcrouter/ficheroZona.png)
-     
    * Ahora editamos el fichero zona inversa:
      
      ``sudo nano /etc/bind/db.192.168.22``
@@ -181,22 +180,25 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
 1. Configurar el netplan para darle una ip y poder tener salida internet.
    
    ![netplan](imgs/pcclient/netplanC.png)
-   
-   <p>
+
+👀️  ``sudo netplan apply`` no te olvides.
+
+<p>
 2. Instalamos ldap-client:
-   
-   ``sudo apt-get install libnss-ldap libpam-ldap ldap-utils nscd``
-   
-   Y durante la instalacion:
-   
-   * URI del servidor LDAP: ldap://192.168.22.1
-   * DN de búsqueda: dc=dominya,dc=com
-   * Versión LDAP: 3
-   * Hacer que la base de datos local sea escribible: No
-   * ¿Exigir inicio de sesión para realizar acciones administrativas?: No
-   * ¿Permitir que el administrador LDAP se comporte como administrador local?: Sí
-   * ¿Permitir acceso sin contraseña?: No
-     <p><p>
+
+``sudo apt-get install libnss-ldap libpam-ldap ldap-utils nscd``
+
+Y durante la instalacion:
+
+* URI del servidor LDAP: ldap://192.168.22.1
+* DN de búsqueda: dc=dominya,dc=com
+* Versión LDAP: 3
+* Hacer que la base de datos local sea escribible: No
+* ¿Exigir inicio de sesión para realizar acciones administrativas?: No
+* ¿Permitir que el administrador LDAP se comporte como administrador local?: Sí
+* ¿Permitir acceso sin contraseña?: No
+  <p><p>
+
 3. Ahora tenemos que configurar el fichero ``/etc/nsswitch.conf``:
    ¿Para que nos sirve este archivo? pues es fundamental para decirle al sistema Linux cómo debe buscar y resolver información sobre diferentes tipos de datos
    
@@ -215,4 +217,34 @@ El paso 1 y 2 se pueden omitir si ya los tienes creados.
 5. Por ultimo inicamos sesion:
    
    ``su - usuario``
+
+# PCDB:
+
+### ¿Que he hecho en pcdb?:
+
+1. Configurar el netplan:
+   
+   ![NetPlanDB](imgs/pcdb/netplanDB.png)
+   
+   👀️  ``sudo netplan apply`` no te olvides.
+   
+   <p>
+2. Instalar mysql:
+   
+   ``sudo apt install mysql-server -y``
+   
+   ``sudo mysql_secure_installation``
+   
+   El secure installation es para ejecutar un asistente interactivo para hacer que la instalación de MySQL sea más segura, configurando contraseñas, eliminando usuarios y bases de datos de prueba, y ajustando permisos por defecto.
+   
+   <p>
+3. Ahora es el turno de bloquear a pcclient para que no pueda acceder a la base de datos y que solo pcweb pueda acceder a ella. Para ello escribiremos los siguientes comandos:
+   
+   * ``sudo ufw allow from 192.168.22.3 to any port 3306``
+   * ``sudo ufw deny from 192.168.22.2 to any port 3306``
+   * ``sudo ufw enable``
+
+
+
+
 
