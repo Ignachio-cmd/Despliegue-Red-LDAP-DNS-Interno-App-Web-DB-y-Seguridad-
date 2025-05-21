@@ -403,3 +403,42 @@ Y durante la instalacion:
    
    ``SOURCE /ruta/al/tu_copia_de_seguridad.sql;``
 
+---
+
+### Netdata:
+
+(👀️ Este extra se encuentra en mis 4 maquinas y en todas esta configurado de la misma manera)
+
+1. Empezamos instalando netdata:
+   
+   ``sudo apt-get install netdata -y``
+2. Lo iniciamos y ponemos para que se inicie cada vez que se reinica el sistema y comprobamos que se esta ejecutando correctamente:
+   
+   * ``sudo systemctl start netdata``
+     <p><p>
+   * ``sudo systemctl enable netdata``
+     <p><p>
+   * ``sudo systemctl status netdata``
+     <p><p>
+3. Vamos a configurarlo tocando un solo detalle de su archivo conf:
+   
+   ``nano /etc/netdata/netdata.conf``
+   
+   Y buscamos la linea: **bind socket to IP = 127.0.0.1.**
+   Y tienes que cambiarla por la ip actual que tienes en el servidor.
+   
+   ![NetData](imgs/pcdb/NetData.png)
+   
+   <p>
+4. Si teneis el cortafuego activado como es mi caso en la base de datos debereis darle paso al puerto 19999 que es el de net data:
+   
+   ``sudo ufw allow 19999``
+   
+   ``sudo ufw reload``
+5. Por ultimo ya es dirigirte al navegador web que quieras y monitorizar tu pc:
+   
+   ``http://your-server-IP-address:19999``
+   ![Interfaz](imgs/pcdb/netdataInterface.png)
+
+
+
