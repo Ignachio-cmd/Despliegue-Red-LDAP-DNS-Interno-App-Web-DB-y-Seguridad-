@@ -264,7 +264,6 @@ Y durante la instalacion:
      ``exit;``
      
      <p>
-
 4. Ahora es el turno de bloquear a pcclient para que no pueda acceder a la base de datos y que solo pcweb pueda acceder a ella. Para ello escribiremos los siguientes comandos:
 
 * ``sudo ufw allow from 192.168.22.3 to any port 3306``
@@ -362,13 +361,45 @@ Y durante la instalacion:
        <p><p>
 5. Y ya esta, por ultimo solo tendriamos que acceder a nuestra pagina web y ya tendriamos moodle listo para funcionar, tendremos una instalacion guiada muy sencilla de moodle.
 
+# Apps Extras:
 
+### Copia de seguridad con mysql dumb:
 
-
-
-
-
-
-
-
+1. Primero vamos a crear directorio para guardar el backup y le vamos a dar permisos 777:
+   
+   ``sudo mkdir -p /backups/mysql``
+   
+   ``sudo chown 777 /backups/mysql``
+   
+   <p>
+2. Ahora vamos a crear el script para que se ejecute cada minuto con crontab:
+   
+   * El Script: ``sudo nano backup_moodle.sh``
+     
+     ![Script](imgs/pcdb/script.png)
+     
+     ¿Que estoy haciendo en el script?:
+     
+     * 1.- Declarar variables.
+     * 2.- Quitar la copia de seguridad anterior antes de almacenar la nueva.
+     * 3.- Usar mysql dumb para almacenar la copia de seguridad en la carpeta que hemos creado anteriormente.
+     * 4.- Comprimir la copia de seguridad para que no ocupe tanto.
+       <p><p>
+   * Y ahora con crontab vamos a programar su uso cada minuto:
+     
+     * 1.- Pon el modo superusuario anter de abrir crontab, ya sabes ``sudo su`` ¿porque? Pues basicamente para que se cree con permisos de administrador y no haya problema al intentar ejecutar el scrip.
+     * 2.- Inicia crontab con ``crontab -e`` y te dira que modo de contab entre 4 quieres usar, pon el 1 ya que hasta el mismo te dice que es el mas facil.
+     * 3.- Programa crontab de la siguiente manera para que te ejecute el script cada minuto:
+       
+       ``*/1 * * * * /home/ignacio/backup_moodle.sh``
+       
+       ![crontab](imgs/pcdb/crontab.png)
+       
+       <p>
+3. Y ya esta, ya tendriamos la copia de seguridad lista para usarse en caso de accidente y ademas se va generando una nueva cada minuto.
+   
+   <p>
+4. Para usarla tendriamos que descomprimir el archivo zip y meternos en mysql, una vez dentro solo tendriamos que decir que base de datos vamos a usar y poner el siguiente comando:
+   
+   ``SOURCE /ruta/al/tu_copia_de_seguridad.sql;``
 
