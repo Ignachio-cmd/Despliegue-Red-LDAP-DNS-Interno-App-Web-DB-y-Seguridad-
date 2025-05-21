@@ -461,7 +461,7 @@ Y durante la instalacion:
      <p><p>
    * ``libpam-runtime``: Este paquete deja listo para usar la dependecia anterior.
      <p><p>
-   * ``libio-pty-perl``: Otro módulo de Perl. Esta vez esta dependencia nos proporciona una interfaz para pseudo-terminales (PTYs). Es útil para programas que necesitan interactuar con terminales como si fueran usuarios (por ejemplo, para ejecutar comandos con salida interactiva, algo que Webmin puede necesitar para algunas operaciones).
+   * ``libio-pty-perl``: Esta vez esta dependencia nos proporciona una interfaz para pseudo-terminales (PTYs). Es útil para programas que necesitan interactuar con terminales como si fueran usuarios (por ejemplo, para ejecutar comandos con salida interactiva, algo que Webmin puede necesitar para algunas operaciones).
      <p><p>
 2. Vamos a la [pagina oficial de webmin](https://webmin.com/download/) y seguimos los pocos pasos que hay para instalar webmin.
    
