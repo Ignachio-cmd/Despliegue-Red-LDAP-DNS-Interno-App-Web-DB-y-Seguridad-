@@ -438,7 +438,44 @@ Y durante la instalacion:
 5. Por ultimo ya es dirigirte al navegador web que quieras y monitorizar tu pc:
    
    ``http://your-server-IP-address:19999``
+   
    ![Interfaz](imgs/pcdb/netdataInterface.png)
 
+---
 
+### Webmin:
+
+1. Vamos a instalar todas las dependencias necesarias:
+   
+   ``sudo apt install -y perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl``
+   
+   Desglosemos un poco esto:
+   
+   * ``pearl``: Es el lenguaje de programacion usado por webmin.
+     <p><p>
+   * ``libnet-ssleay-perl``: Esto proporciona a pearl soporte SSL/TLS osea se pura seguridad para comunicaciones de red. Es vital para que Webmin pueda comunicarse de forma segura con otros servicios, y también para que sus módulos de red puedan funcionar.
+     <p><p>
+   * ``openssl``: Con esto estamos instalando las herramientas de línea de comandos y librerías para OpenSSL. ¿Y que es OpenSSL? pues es una biblioteca criptográfica esencial que proporciona funciones para SSL/TLS, cifrado, firmas digitales, etc. Muchos servicios y aplicaciones en Linux dependen de ella para la seguridad de las comunicaciones.
+     <p><p>
+   * ``libauthen-pam-perl``: Nos permite que a los programas de Perl (como Webmin) puedan interactuar con PAM (Pluggable Authentication Modules).¿Y que es PAM? es el sistema que maneja la autenticación de usuarios en Linux. Es lo que va a dejar que webmin pueda autenticar usuarios, cambiar contraseñas, etc.
+     <p><p>
+   * ``libpam-runtime``: Este paquete deja listo para usar la dependecia anterior.
+     <p><p>
+   * ``libio-pty-perl``: Otro módulo de Perl. Esta vez esta dependencia nos proporciona una interfaz para pseudo-terminales (PTYs). Es útil para programas que necesitan interactuar con terminales como si fueran usuarios (por ejemplo, para ejecutar comandos con salida interactiva, algo que Webmin puede necesitar para algunas operaciones).
+     <p><p>
+2. Vamos a la [pagina oficial de webmin](https://webmin.com/download/) y seguimos los pocos pasos que hay para instalar webmin.
+   
+   <p>
+3. Si tenemos firewall activado tendremos que darle paso al puerto de webmin que es el 10000:
+   
+   ``sudo ufw allow 10000/tcp``
+   
+   ``sudo ufw enable``
+   
+   <p>
+4. Accedemos a la web de webmin a traves de ``https://tu-ip:10000`` y podremos ver la interfaz de webmin, solo tendremos que iniciar sesion a traves de nuestro usuario linux y la contraseña que tengamos en ese mismo usuario.
+   
+   ![wesmin](imgs/pcrouter/wesmin.png)
+   
+   Webmin nos va a permitir (entre otras muchas cosas) gestionar visualmente nuestro servidor ldap y dns.
 
